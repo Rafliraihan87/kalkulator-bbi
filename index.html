@@ -89,6 +89,10 @@
         bbi = (7 * usia - 5) / 2;
       } else {
         // Dewasa pakai rumus Broca
+        if (usia < 12) {
+          alert("Usia dewasa minimal 12 tahun!");
+          return;
+        }
         if (isNaN(tinggi)) {
           hasil.textContent = "Tinggi badan wajib diisi untuk dewasa.";
           return;

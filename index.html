@@ -11,102 +11,95 @@
   <div class="container">
     <h1>Kalkulator BBI (Berat Badan Ideal)</h1>
 
-    <label for="kategoriUsia">Kategori:</label>
-    <select id="kategoriUsia">
+    <label for="kategori">Pilih Kategori Usia:</label>
+    <select id="kategori" onchange="toggleInputs()">
       <option value="bayi">0–11 bulan</option>
-      <option value="anak1">1–6 tahun</option>
-      <option value="anak2">7–12 tahun</option>
+      <option value="balita">1–6 tahun</option>
+      <option value="anak">7–12 tahun</option>
       <option value="dewasa">Dewasa</option>
     </select>
-
+  
     <label for="usia">Usia (<span id="satuanUsia">bulan</span>):</label>
-    <input type="number" id="usia" required />
-
-    <label for="jenisKelamin" id="labelJK" style="display: none;">Jenis Kelamin:</label>
-    <select id="jenisKelamin" style="display: none;">
-      <option value="pria">Laki-Laki</option>
-      <option value="wanita">Perempuan</option>
-    </select>
-
-    <label for="tinggi" id="labelTinggi" style="display: none;">Tinggi Badan (cm):</label>
-    <input type="number" id="tinggi" style="display: none;" />
-
+    <input type="number" id="usia" required>
+  
+    <div id="dewasaInputs">
+      <label for="tinggi">Tinggi Badan (cm):</label>
+      <input type="number" id="tinggi" required>
+  
+      <label for="gender">Jenis Kelamin:</label>
+      <select id="gender">
+        <option value="pria">Pria</option>
+        <option value="wanita">Wanita</option>
+      </select>
+    </div>
+  
     <button onclick="hitungBBI()">Hitung BBI</button>
-
+  
     <div id="hasil"></div>
-  </div>
-
-  <script>
-    const kategoriUsia = document.getElementById("kategoriUsia");
-    const satuanUsia = document.getElementById("satuanUsia");
-    const labelTinggi = document.getElementById("labelTinggi");
-    const tinggiInput = document.getElementById("tinggi");
-    const labelJK = document.getElementById("labelJK");
-    const jkInput = document.getElementById("jenisKelamin");
-
-    kategoriUsia.addEventListener("change", function () {
-      const value = kategoriUsia.value;
-
-      if (value === "bayi") {
-        satuanUsia.textContent = "bulan";
-        labelTinggi.style.display = "none";
-        tinggiInput.style.display = "none";
-        labelJK.style.display = "none";
-        jkInput.style.display = "none";
-      } else if (value === "anak1" || value === "anak2") {
-        satuanUsia.textContent = "tahun";
-        labelTinggi.style.display = "none";
-        tinggiInput.style.display = "none";
-        labelJK.style.display = "none";
-        jkInput.style.display = "none";
-      } else {
-        satuanUsia.textContent = "tahun";
-        labelTinggi.style.display = "block";
-        tinggiInput.style.display = "block";
-        labelJK.style.display = "block";
-        jkInput.style.display = "block";
-      }
-    });
-
-    function hitungBBI() {
-      const kategori = kategoriUsia.value;
-      const usia = parseFloat(document.getElementById("usia").value);
-      const tinggi = parseFloat(document.getElementById("tinggi").value);
-      const jenisKelamin = document.getElementById("jenisKelamin").value;
-      const hasil = document.getElementById("hasil");
-
-      let bbi = 0;
-
-      if (kategori === "bayi") {
-        if (usia >= 0 && usia <= 11) {
-          bbi = (usia + 9) / 2;
+  
+    <script>
+      function toggleInputs() {
+        const kategori = document.getElementById("kategori").value;
+        const dewasaInputs = document.getElementById("dewasaInputs");
+        const satuan = document.getElementById("satuanUsia");
+  
+        if (kategori === "dewasa") {
+          dewasaInputs.style.display = "block";
+          satuan.innerText = "tahun";
         } else {
-          hasil.textContent = "Usia bayi harus antara 0-11 bulan.";
-          return;
+          dewasaInputs.style.display = "none";
+          satuan.innerText = (kategori === "bayi") ? "bulan" : "tahun";
         }
-      } else if (kategori === "anak1") {
-        bbi = 2 * usia + 8;
-      } else if (kategori === "anak2") {
-        bbi = (7 * usia - 5) / 2;
-      } else {
-        // Dewasa pakai rumus Broca
-        if (usia < 12) {
-          alert("Usia dewasa minimal 12 tahun!");
-          return;
-        }
-        if (isNaN(tinggi)) {
-          hasil.textContent = "Tinggi badan wajib diisi untuk dewasa.";
-          return;
-        }
-        const broca = tinggi - 100;
-        bbi = jenisKelamin === "pria" ? broca - (broca * 0.1) : broca - (broca * 0.15);
       }
-
-      hasil.textContent = `Berat Badan Ideal: ${bbi.toFixed(1)} kg`;
-    }
-
-    // Inisialisasi tampilan saat pertama kali
-    kategoriUsia.dispatchEvent(new Event('change'));
-  </script>
-</body>
-</html>
+  
+      function hitungBBI() {
+        const kategori = document.getElementById("kategori").value;
+        const usia = parseFloat(document.getElementById("usia").value);
+        const tinggi = parseFloat(document.getElementById("tinggi").value);
+        const gender = document.getElementById("gender").value;
+        const hasil = document.getElementById("hasil");
+  
+        if (kategori === "bayi") {
+          if (usia < 0 || usia > 11) {
+            hasil.innerText = "Usia harus antara 0–11 bulan.";
+            return;
+          }
+          const bbi = (usia + 9) / 2;
+          hasil.innerText = `Berat Badan Ideal: ${bbi.toFixed(1)} kg`;
+        } else if (kategori === "balita") {
+          if (usia < 1 || usia > 6) {
+            hasil.innerText = "Usia harus antara 1–6 tahun.";
+            return;
+          }
+          const bbi = 2 * usia + 8;
+          hasil.innerText = `Berat Badan Ideal: ${bbi.toFixed(1)} kg`;
+        } else if (kategori === "anak") {
+          if (usia < 7 || usia > 12) {
+            hasil.innerText = "Usia harus antara 7–12 tahun.";
+            return;
+          }
+          const bbi = (7 * usia - 5) / 2;
+          hasil.innerText = `Berat Badan Ideal: ${bbi.toFixed(1)} kg`;
+        } else if (kategori === "dewasa") {
+          if (usia < 13) {
+            hasil.innerText = "Untuk usia di bawah 13 tahun, silakan pilih kategori lain.";
+            return;
+          }
+  
+          if (!tinggi || isNaN(tinggi)) {
+            hasil.innerText = "Tinggi badan harus diisi.";
+            return;
+          }
+  
+          let bbi = tinggi - 100;
+          bbi -= (gender === "pria") ? (bbi * 0.1) : (bbi * 0.15);
+          hasil.innerText = `Berat Badan Ideal: ${bbi.toFixed(1)} kg`;
+        }
+      }
+  
+      // jalankan toggle input pertama kali
+      toggleInputs();
+    </script>
+  
+  </body>
+  </html>
